@@ -8,9 +8,9 @@ Using this script is probably a TOS violation (although a minor one) that could 
 ## Features:
 This script allows you to download all of the clips made by you, it came out of my need to save clips I've made in the recent dmca drama and removal of twitch clips and vods of streamers.
 
-Alongside with just downloading the clips you can limit the amount of clips you want to download, sort the clips by top viewed (and maybe only download your 20 top viewed clips). Refer to Arguements for more info about this.
-You can change the filename to have information you might find interesting in the order you want it such as views game and more. This allows you to sort your downloads by game, or top viewed clips while viewing it all on your pc. Refer to Formatting the filename for more info.
-This script also lets you continue from the same page you stopped downloading so you don't have to start all over again. Refer to cursor section in Arguements for more info
+* Alongside with just downloading the clips you can limit the amount of clips you want to download, sort the clips by top viewed (and maybe only download your 20 top viewed clips). Refer to Arguements for more info about this.
+* You can change the filename to have information you might find interesting in the order you want it such as views game and more. This allows you to sort your downloads by game, or top viewed clips while viewing it all on your pc. Refer to Formatting the filename for more info.
+* This script also lets you continue from the same page you stopped downloading so you don't have to start all over again. Refer to cursor section in Arguements for more info
 
 ## Requirements:
 python (works with 3.7.0, probably compatible with other 3.6+ versions)
