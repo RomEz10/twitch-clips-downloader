@@ -40,7 +40,7 @@ def validate_token(oauth):
 
 parser = argparse.ArgumentParser('Download all of the clips clipped by you')
 parser.add_argument('--cursor', '-cu', help='use this to continue from a previous session', default=None)
-parser.add_argument('--client_id', '-c', help='using twitch\'s client id, if it doesn\'t work try your own',
+parser.add_argument('--client_id', '-cid', help='using twitch\'s client id, if it doesn\'t work try your own',
                     default='kimne78kx3ncx6brgo4mv6wki5h1ko')
 parser.add_argument('--oauth', '-o', required=True, help='your oauth token taken from twitch. DO NOT SHARE THIS')
 parser.add_argument('--views', '-v', help='to sort the clips downloaded by most viewed', action='store_true')
@@ -49,11 +49,11 @@ parser.add_argument('--limit', '-li', help='to limit the amount of clips downloa
 parser.add_argument('--fname', '-fn', help='this can be use to structure each clip\'s file name using.'
                                            ' please read the readme for an extensive guide of how to'
                                            ' format the name. also make sure your filename + path are not pass 260 '
-                                           'chars or windows might be angry', default=['%v', '%n'],
+                                           'chars or windows might be angry', default=['%v', '%t'],
                     choices=['%t', '%d', '%v', '%l', '%g', '%s', '%li', '%sl'], nargs='+')
 parser.add_argument('--append_char', '-ac', help='character used between two variables in file name'
-                                                 ' e.g: -ac _ default formatting will be- views: 1_name: clipname.mp4'
-                    , default='_')
+                                                 ' e.g: -ac _ default formatting will be- views- 1_name- clipname.mp4'
+                    , default='_', type=str)
 args = parser.parse_args()
 
 # assigning all arguments
@@ -71,7 +71,7 @@ if not login:
     sys.exit('oauth token doesn\'t work')
 twitch_id = get_id_from_username(login, args.oauth, args.client_id)
 append_word = {'%t': 'title- ', '%d': 'date- ', '%v': 'views- ', '%l': 'user- ', '%g': 'game- ', '%s': 'streamer- ',
-               '%li': 'link- ', '%sl': 'slug- '}
+               '%li': 'link- ', '%sl': 'slug- '}  # used in the filename before each variable
 # this is the template we must follow if we want twitch to answer us
 body = [{'operationName': 'ClipsManagerTable_User', 'variables': {'login': login, 'limit': 20, 'criteria':
     {'sort': 'CREATED_AT_DESC', 'period': 'ALL_TIME', 'curatorID': twitch_id}, 'cursor': cursor}, 'extensions':
@@ -87,7 +87,7 @@ regex = re.compile('<|>|:|\"|/|\\|\||\?|\*')  # will be used later to remove cha
 edges = []
 hasClips = True
 while hasClips:
-    if limit < 20:
+    if 0 < limit < 20:  # if limit is not None (default value) and under 20
         body[0]['variables']['limit'] = limit
         limit -= 20  # when limit is below 0 we don't hasClips will be false so we don't really care
     response = requests.post('https://gql.twitch.tv/gql', data=json.dumps(body), headers=headers)
@@ -142,7 +142,7 @@ for slugger in edges:
         for field in fname:
             file_name += append_word[field]
             file_name += str(slugger[field]) + append_char
-        slugger['file_name'] = regex.sub(' ', file_name[:-1])  # the loop above also added the appended char at the end
+        slugger['file_name'] = regex.sub(' ', file_name[:-len(append_char)])  # the loop above also added the appended char at the end
         # also removing chars windows might dislike again just to be sure
         # downloading the clip
         response = requests.get(slugger['download_url'], stream=True)
